@@ -13,9 +13,11 @@ import Data.Maybe
 generateSearch :: [String] -> IO ()
 
 generateSearch [] = generateSearch (randomwords 25)
-generateSearch ourwords
- | (sum( map length ourwords)) < 25 = generateSearch (ourwords++(randomwords (25 - (sum( map length ourwords)))))
- | otherwise = print (buildRows ourwords)
+generateSearch ourwords =
+ -- | (sum( map length ourwords)) < 25 = generateSearch (ourwords++(randomwords (25 - (sum( map length ourwords)))))
+ do
+     result <- buildRows ourwords
+     putStrLn (show result)
  
 
 --Takes a set of words and returns a set of rows
@@ -42,16 +44,16 @@ placeWords :: [String] -> [[(Char,Bool)]] -> [String] -> [[(Char,Bool)]] -> IO [
 
 placeWords [] ws _ _ = return ws
 placeWords ourwords ws ogwords ogws = do
-  let (isvalid, pos, ori) = (checkPosValid (head ourwords) (randomInt, randomInt) ws)
-  let (validity, position, orientation) = ori
+  (isvalid, pos, ori) <- (checkPosValid (head ourwords) (randomInt, randomInt) ws)
+  --let (validity, position, orientation) = ori
      -- pos = temp
       --ori = temp
-  if validity
-    then placeWords (tail ourwords) (placeChars (head ourwords) ws position orientation) ogwords ogws
+  if isvalid
+    then placeWords (tail ourwords) (placeChars (head ourwords) ws pos ori) ogwords ogws
     else placeWords ogwords ogws ogwords ogws
 
 --Checks if a word can be placed in a radnom orientation given a position, wordlength and a wordsearch.
---checkPosValid :: String -> (Int,Int) -> [[(Char,Bool)]] ->IO (Bool, (Int, Int), (Int, Int))
+checkPosValid :: String -> (Int,Int) -> [[(Char,Bool)]] -> IO (Bool, (Int, Int), (Int, Int))
 
 checkPosValid ourword pos ws =
   let ori = randomOrientation  (fst $ randomR (1, 8) wsGen)
@@ -104,7 +106,7 @@ replaceEle (h:t) n ele
  | otherwise = h:(replaceEle t (n-1) ele)
 
 --Randomly choses an orientation
---randomOrientation :: (a,b)
+randomOrientation :: Int -> (Int, Int)
 randomOrientation n 
     | n == 1 = (1, 1)
     | n == 2 = (-1, 1)
@@ -119,12 +121,12 @@ randomOrientation n
   
 
 --Generates a random letter from a to z
-randomLetter :: Char
+--randomLetter :: Char
 randomLetter = fst $ randomR ('a', 'z') wsGen
 
 --Generates a random number
 --randomInt :: Random a => a
-randomInt = randomIO (0, 14) :: Int
+randomInt = fst $ randomR (0, 14) wsGen
 
 
 
@@ -135,7 +137,7 @@ randomwords 0 = []
 randomwords 1 = []
 randomwords 2 = []
 randomwords n 
- | n `mod` 5 == 0 = pickfive (fromIntegral(round(n/5)))
+ | n `mod` 5 == 0 = pickfive (n `div` 5)
  | n `mod` 5 == 1 = (pickword 6): randomwords (n-6)
  | n `mod` 5 == 2 = (pickword 7): randomwords (n-7)
  | n `mod` 5 == 3 = (pickword 8): randomwords (n-8)
@@ -164,11 +166,11 @@ pickfive n
 
 wsGen = mkStdGen 42
 
-{-
+
 -- Main function to get input and generate the word search
 main :: IO ()
 main = do
   putStrLn "Enter a list of words to include in the word search, separated by commas:"
   input <- getLine
   let ourwords = words (map (\c -> if c == ',' then ' ' else c) input)
-  generateWordSearch ourwords -}  
+  generateSearch ourwords 
