@@ -1,7 +1,8 @@
 # WordSearch
 CPSC312 Haskell Project
+
 === What is the problem? ===
-Our goal is to make an application in which the user can provide a set of words to the program and it will return a generated [https://en.wikipedia.org/wiki/Word_search word search] including the provided words. 
+Our goal is to make an application in which the user can provide a set of words to the program and it will return a generated word search including the provided words. 
  
 === What is the something extra? ===
 The console will display the word search game, along with the words inputted so that the player can print the game, or play it on their screen. It will also check to see if the user inputted enough words, so that it can fill in some words if needed. If time allows, we'll add the additional challenge of having words displayed backwards in the grid.
