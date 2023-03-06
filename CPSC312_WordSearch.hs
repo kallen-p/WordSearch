@@ -17,7 +17,7 @@ generateSearch ourwords =
  -- | (sum( map length ourwords)) < 25 = generateSearch (ourwords++(randomwords (25 - (sum( map length ourwords)))))
  do
      result <- buildRows ourwords
-     putStrLn (show result)
+     putStrLn (show [fst j |i <- result, j <- i])
  
 
 --Takes a set of words and returns a set of rows
@@ -44,7 +44,7 @@ placeWords :: [String] -> [[(Char,Bool)]] -> [String] -> [[(Char,Bool)]] -> IO [
 
 placeWords [] ws _ _ = return ws
 placeWords ourwords ws ogwords ogws = do
-  (isvalid, pos, ori) <- (checkPosValid (head ourwords) (randomInt (length(ourwords)*11111), randomInt (length(ourwords)*1111)) ws)
+  (isvalid, pos, ori) <- (checkPosValid (head ourwords) (randomInt (length(ourwords)*111), randomInt ((length(ourwords)+1)*11)) ws)
   --let (validity, position, orientation) = ori
      -- pos = temp
       --ori = temp
@@ -56,7 +56,7 @@ placeWords ourwords ws ogwords ogws = do
 checkPosValid :: String -> (Int,Int) -> [[(Char,Bool)]] -> IO (Bool, (Int, Int), (Int, Int))
 
 checkPosValid ourword pos ws =
-  let ori = randomOrientation  (fst $ randomR (1, 8) (mkStdGen (length(ourword)*1111111)))
+  let ori = randomOrientation  (fst $ randomR (1, 8) (mkStdGen ((length(ourword)+5)*111)))
       rowpos = fst pos
       colpos = snd pos
   in if snd (ws !! rowpos !! colpos)
@@ -68,7 +68,7 @@ checkPosValid ourword pos ws =
                  then return (True, pos, ori)
                  else return (False, pos, ori)
            else return (False, pos, ori)
-		else return (False, pos, ori)
+         else return (False, pos, ori)
 
 --Checks if the word will fit vertically and horizontally in the wordsearch
 checkSafeRow :: [[(Char,Bool)]] -> Int -> Int -> Bool
@@ -78,7 +78,7 @@ checkSafeRow (row:rows) rowpos colpos =
     if rowpos == 0
       then checkSafeCol row colpos
       else (checkSafeCol row colpos) && checkSafeRow rows (rowpos - 1) colpos
-	  
+  
 --Checks if the word will fit horizontally in a row of the wordsearch
 checkSafeCol :: [(Char,Bool)] -> Int -> Bool
 checkSafeCol row colpos = if colpos >= 0 && colpos < length row
@@ -122,7 +122,7 @@ randomOrientation n
 
 --Generates a random letter from a to z
 --randomLetter :: Char
-randomLetter i = fst $ randomR ('a', 'z') (mkStdGen (i*1111111))
+randomLetter i = fst $ randomR ('a', 'z') (mkStdGen (i*111))
 
 --Generates a random number
 --randomInt :: Random a => a
