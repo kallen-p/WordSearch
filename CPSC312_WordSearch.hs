@@ -24,7 +24,7 @@ generateSearch ourwords =
 buildRows :: [String] -> IO [[(Char,Bool)]]
 
 buildRows ourwords = do
-  let numrows = 15
+  let numrows = 20
   randWS <- fillWS numrows numrows []
   filledWS <- placeWords ourwords randWS ourwords randWS 
   return filledWS
@@ -36,7 +36,7 @@ fillWS numrows numcols ws =
  if numrows == 0 
   then return ws
   else do
-   let newRow =  [(randomLetter, True) | i <- [1..numcols]]
+   let newRow =  [(randomLetter (numrows + i), True) | i <- [1..numcols]]
    fillWS (numrows - 1) numcols (newRow:ws) 
    
 --Places the words in the wordsearch
@@ -44,7 +44,7 @@ placeWords :: [String] -> [[(Char,Bool)]] -> [String] -> [[(Char,Bool)]] -> IO [
 
 placeWords [] ws _ _ = return ws
 placeWords ourwords ws ogwords ogws = do
-  (isvalid, pos, ori) <- (checkPosValid (head ourwords) (randomInt, randomInt) ws)
+  (isvalid, pos, ori) <- (checkPosValid (head ourwords) (randomInt (length(ourwords)*11111), randomInt (length(ourwords)*1111)) ws)
   --let (validity, position, orientation) = ori
      -- pos = temp
       --ori = temp
@@ -56,7 +56,7 @@ placeWords ourwords ws ogwords ogws = do
 checkPosValid :: String -> (Int,Int) -> [[(Char,Bool)]] -> IO (Bool, (Int, Int), (Int, Int))
 
 checkPosValid ourword pos ws =
-  let ori = randomOrientation  (fst $ randomR (1, 8) wsGen)
+  let ori = randomOrientation  (fst $ randomR (1, 8) (mkStdGen (length(ourword)*1111111)))
       rowpos = fst pos
       colpos = snd pos
   in if snd (ws !! rowpos !! colpos)
@@ -122,11 +122,11 @@ randomOrientation n
 
 --Generates a random letter from a to z
 --randomLetter :: Char
-randomLetter = fst $ randomR ('a', 'z') wsGen
+randomLetter i = fst $ randomR ('a', 'z') (mkStdGen (i*1111111))
 
 --Generates a random number
 --randomInt :: Random a => a
-randomInt = fst $ randomR (0, 14) wsGen
+randomInt i= fst $ randomR (0, 14) (mkStdGen i)
 
 
 
@@ -163,8 +163,6 @@ pickfive n
  | otherwise = take n ["apple", "beach", "chess", "daisy", "event"]
 
 
-
-wsGen = mkStdGen 42
 
 
 -- Main function to get input and generate the word search
