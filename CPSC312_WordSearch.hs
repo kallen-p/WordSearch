@@ -33,7 +33,7 @@ fillWS numrows numcols ws =
  if numrows == 0 
   then return ws
   else do
-   let newRow =  [(randomLetter (numrows + i), True) | i <- [1..numcols]]
+   let newRow =  [(randomLetter (numrows + (i*111)), True) | i <- [1..numcols]]
    fillWS (numrows - 1) numcols (newRow:ws) 
    
 --Places the words in the wordsearch
@@ -111,7 +111,7 @@ randomOrientation n
   
 --Generates a random letter from a to z
 --randomLetter :: Char
-randomLetter i = fst $ randomR ('a', 'z') (mkStdGen (i*111))
+randomLetter i = fst $ randomR ('a', 'z') (mkStdGen i)
 
 --Generates a random number
 --randomInt :: Random a => a
