@@ -25,6 +25,7 @@ buildRows ourwords = do
   let numrows = 20
   randWS <- fillWS numrows numrows []
   filledWS <- placeWords ourwords randWS ourwords randWS
+  return filledWS
 
 --Fills a nxn sized wordsearch with random letters 
 fillWS :: Int -> Int -> [[(Char,Bool)]] -> IO [[(Char,Bool)]]
