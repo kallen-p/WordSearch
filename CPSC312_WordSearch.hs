@@ -4,9 +4,10 @@ import Data.Foldable
 import Data.Maybe
 
 -- | Splits the input string into chunks of length 15 characters and joins them with a newline character.
-addNewlineEvery15Chars :: String -> String
-addNewlineEvery15Chars [] = [] -- base case: empty string
-addNewlineEvery15Chars xs = take 20 xs ++ "\n" ++ addNewlineEvery15Chars (drop 20 xs)
+addNewlines :: String -> Int -> String
+addNewlines [] _ = [] -- base case: empty string
+addNewlines xs 1 = take 140 xs ++ "\n" ++ addNewlines (drop 140 xs) 0
+addNewlines xs 0 = take 140 xs ++ "\n" ++ addNewlines (drop 140 xs) 0
 
 --Takes a set of words and returns a word search with a minimum of 25 characters in the list of searchable words
 generateSearch :: [String] -> IO ()
@@ -15,7 +16,7 @@ generateSearch [] = generateSearch (randomwords 25)
 generateSearch ourwords =
  do
      result <- buildRows ourwords
-     putStrLn (addNewlineEvery15Chars (show [fst j |i <- result, j <- i]))
+     putStrLn (filter (`notElem` "\"[],") (addNewlines (show [fst j : "   "|i <- result, j <- i]) 1))
 
 --Takes a set of words and returns a set of rows
 buildRows :: [String] -> IO [[(Char,Bool)]]
@@ -153,4 +154,5 @@ main = do
   putStrLn "Enter a list of words to include in the word search, separated by commas:"
   input <- getLine
   let ourwords = words (map (\c -> if c == ',' then ' ' else c) input)
-  generateSearch ourwords 
+  generateSearch ourwords
+  print ourwords
