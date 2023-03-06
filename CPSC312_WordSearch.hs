@@ -1,24 +1,21 @@
-
 -- Word Search
 import System.Random
 import Data.Foldable
 import Data.Maybe
 
---data (Char,Bool) = (Char,Bool)' (Char, Bool)
+-- | Splits the input string into chunks of length 15 characters and joins them with a newline character.
+addNewlineEvery15Chars :: String -> String
+addNewlineEvery15Chars [] = [] -- base case: empty string
+addNewlineEvery15Chars xs = take 20 xs ++ "\n" ++ addNewlineEvery15Chars (drop 20 xs)
 
-{-data WordSearch = Row [(Char,Bool)]
-  | Rows [[(Char,Bool)]] -}
- 
 --Takes a set of words and returns a word search with a minimum of 25 characters in the list of searchable words
 generateSearch :: [String] -> IO ()
 
 generateSearch [] = generateSearch (randomwords 25)
 generateSearch ourwords =
- -- | (sum( map length ourwords)) < 25 = generateSearch (ourwords++(randomwords (25 - (sum( map length ourwords)))))
  do
      result <- buildRows ourwords
-     putStrLn (show [fst j |i <- result, j <- i])
- 
+     putStrLn (addNewlineEvery15Chars (show [fst j |i <- result, j <- i]))
 
 --Takes a set of words and returns a set of rows
 buildRows :: [String] -> IO [[(Char,Bool)]]
@@ -45,14 +42,11 @@ placeWords :: [String] -> [[(Char,Bool)]] -> [String] -> [[(Char,Bool)]] -> IO [
 placeWords [] ws _ _ = return ws
 placeWords ourwords ws ogwords ogws = do
   (isvalid, pos, ori) <- (checkPosValid (head ourwords) (randomInt (length(ourwords)*111), randomInt ((length(ourwords)+1)*11)) ws)
-  --let (validity, position, orientation) = ori
-     -- pos = temp
-      --ori = temp
   if isvalid
     then placeWords (tail ourwords) (placeChars (head ourwords) ws pos ori) ogwords ogws
     else placeWords ogwords ogws ogwords ogws
 
---Checks if a word can be placed in a radnom orientation given a position, wordlength and a wordsearch.
+--Checks if a word can be placed in a random orientation given a position, wordlength and a wordsearch.
 checkPosValid :: String -> (Int,Int) -> [[(Char,Bool)]] -> IO (Bool, (Int, Int), (Int, Int))
 
 checkPosValid ourword pos ws =
@@ -62,7 +56,6 @@ checkPosValid ourword pos ws =
   in if snd (ws !! rowpos !! colpos)
        then do
          let positions = [((i * (fst ori)) + rowpos, (i * (snd ori)) + colpos) | i <- [1..length(ourword)]]
-        -- valid = map (&&) [checkSafeRow ws rowpos colpos | (rowpos, colpos) <- positions]
          if all (==True) [checkSafeRow ws rowpos colpos | (rowpos, colpos) <- positions]
            then if (all (==True) [snd(ws!!rowpos!!colpos) | (rowpos,colpos) <-positions]) || (ourword!!colpos == fst(ws!!rowpos!!colpos))
                  then return (True, pos, ori)
@@ -85,13 +78,11 @@ checkSafeCol row colpos = if colpos >= 0 && colpos < length row
                     then True
                     else False
 
-
 --Takes a string WordSearch Position and an orientation and replaces the letters in the WordSearch at that position with the letters of the string going the specified orientation
 placeChars :: String -> [[(Char,Bool)]] -> (Int, Int) -> (Int, Int) -> [[(Char,Bool)]]
 
 placeChars "" ws _ _ = ws
 placeChars ourword ws pos ori = placeChars (tail ourword) (replaceRow ws (fst pos) (replaceEle (ws!!(fst pos)) (snd pos) (head ourword, False))) (fst pos + fst ori, snd pos + snd ori) ori
-
 
 --Takes a list, a position, and an element and replaces the element at the position in the list with the provided element
 replaceRow :: [[(Char,Bool)]] -> Int -> [(Char,Bool)] -> [[(Char,Bool)]]
@@ -117,9 +108,7 @@ randomOrientation n
     | n == 7 = (-1, -1)
     | n == 8 = (0, -1)
     | otherwise =  (0,1)
-
   
-
 --Generates a random letter from a to z
 --randomLetter :: Char
 randomLetter i = fst $ randomR ('a', 'z') (mkStdGen (i*111))
@@ -127,8 +116,6 @@ randomLetter i = fst $ randomR ('a', 'z') (mkStdGen (i*111))
 --Generates a random number
 --randomInt :: Random a => a
 randomInt i= fst $ randomR (0, 14) (mkStdGen i)
-
-
 
 --Takes in a number of characters that are needed as extra and returns a list of words whose length sum to that integer
 randomwords :: Int -> [String]
@@ -142,7 +129,6 @@ randomwords n
  | n `mod` 5 == 2 = (pickword 7): randomwords (n-7)
  | n `mod` 5 == 3 = (pickword 8): randomwords (n-8)
  | n `mod` 5 == 4 = (pickword 9): randomwords (n-9)
- 
 
 --Takes an integer from 6-9 and returns a random word of that length from a list of words
 pickword:: Int -> String
@@ -154,16 +140,12 @@ pickword n
  | n == 8 = "Hospital"
  | n == 9 = "Brilliant"
  
-
 --Takes an integer from 0-5 and returns that many 5 letter words in a list
 pickfive :: Int -> [String]
 
 pickfive n 
  | n > 5 = pickfive 5
  | otherwise = take n ["apple", "beach", "chess", "daisy", "event"]
-
-
-
 
 -- Main function to get input and generate the word search
 main :: IO ()
