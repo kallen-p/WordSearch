@@ -122,10 +122,6 @@ randomInt :: (Random a, Num a) => Int -> a
 
 randomInt i= fst $ randomR (0, 14) (mkStdGen i)
 
-<<<<<<< Updated upstream
- 
-=======
->>>>>>> Stashed changes
 --Takes an integer from 0-5 and returns that many 5 letter words in a list
 pickfive :: Int -> [String]
 
